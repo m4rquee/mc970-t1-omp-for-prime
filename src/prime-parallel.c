@@ -80,8 +80,8 @@ int prime_default(int n) {
 #pragma omp parallel for schedule(runtime) private(lim) reduction(+:total)
 	for (int i = 3; i <= n; i += 2) {
 		total++;
-		lim = (int) ceil(sqrt(i)) + 1;
-		for (int j = 2; j < lim; j++)
+		lim = ceil(sqrt(i));
+		for (int j = 2; j <= lim; j++)
 			if (i % j == 0) {
 				total--;
 				break;

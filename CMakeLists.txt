@@ -13,4 +13,4 @@ target_link_libraries(serial
     PUBLIC OpenMP::OpenMP_C)
 
 target_link_libraries(parallel
-    PUBLIC OpenMP::OpenMP_C)
+    PUBLIC OpenMP::OpenMP_C m)

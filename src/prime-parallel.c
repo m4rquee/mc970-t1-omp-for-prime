@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <math.h>
 
 int main(int argc, char *argv[]);
 int prime_default(int n);
@@ -73,22 +74,19 @@ int main(int argc, char *argv[]) {
     Output, the number of prime numbers up to N.
 */
 int prime_default(int n) {
-  int i;
-  int j;
-  int prime;
-  int total = 0;
-
-  for (i = 2; i <= n; i++) {
-    prime = 1;
-
-    for (j = 2; j < i; j++) {
-      if (i % j == 0) {
-        prime = 0;
-        break;
-      }
-    }
-    total = total + prime;
-  }
+	if (n <= 1)
+		return 0;
+  int total = 1, lim;
+#pragma omp parallel for schedule(runtime) private(lim) reduction(+:total)
+	for (int i = 3; i <= n; i += 2) {
+		total++;
+		lim = (int) ceil(sqrt(i)) + 1;
+		for (int j = 2; j < lim; j++)
+			if (i % j == 0) {
+				total--;
+				break;
+			}
+	}
 
   return total;
 }

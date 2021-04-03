@@ -4,7 +4,7 @@
 #include <math.h>
 
 int main(int argc, char *argv[]);
-int prime_default(int n);
+int prime_default(int ni, int nf);
 
 int main(int argc, char *argv[]) {
   int n;
@@ -41,9 +41,9 @@ int main(int argc, char *argv[]) {
   n = n_lo;
 
   t = omp_get_wtime();
-
+  primes = 0;
   while (n <= n_hi) {
-    primes = prime_default(n);
+    primes += prime_default(n >> 1, n);
 
     printf("  %8d  %8d\n", n, primes);
 
@@ -60,25 +60,13 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-/*
-  Purpose:
-   counts primes.
-  Licensing:
-    This code is distributed under the GNU LGPL license.
-  Modified:
-    10 July 2010
-  Author:
-    John Burkardt
-  Parameters:
-    Input, the maximum number to check.
-    Output, the number of prime numbers up to N.
-*/
-int prime_default(int n) {
-	if (n <= 1)
+int prime_default(int ni, int nf) {
+	if (nf <= 1) // no value to check
 		return 0;
-  int total = 1, lim;
-#pragma omp parallel for schedule(runtime) private(lim) reduction(+:total)
-	for (int i = 3; i <= n; i += 2) {
+  int total = ni <= 1, lim; // ni <= 1 -> consider two
+#pragma omp parallel for schedule(runtime) private(lim) \
+  reduction(+:total) if(nf - ni > 5000)
+	for (int i = ni + 1; i <= nf; i += 2) {
 		total++;
 		lim = ceil(sqrt(i));
 		for (int j = 2; j <= lim; j++)

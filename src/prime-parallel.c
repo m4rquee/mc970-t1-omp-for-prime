@@ -64,7 +64,7 @@ int prime_default(int ni, int nf) {
 	if (nf <= 1) // no value to check
 		return 0;
   int total = ni <= 1, lim; // ni <= 1 -> consider two
-#pragma omp parallel for schedule(runtime) private(lim) \
+#pragma omp parallel for schedule(guided) private(lim) \
   reduction(+:total) if(nf - ni > 5000)
 	for (int i = ni + 1; i <= nf; i += 2) {
 		total++;
